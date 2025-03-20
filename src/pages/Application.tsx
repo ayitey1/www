@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Upload, Check } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import axios from 'axios';
+import { motion } from 'framer-motion';
+import { Check, Upload } from 'lucide-react';
+import React, { useState } from 'react';
 const Application = () => {
   const { toast } = useToast();
   const [formState, setFormState] = useState({
     firstName: '',
-    surname: '',
+    surName: '',
     otherName: '',
     email: '',
     phone: '',
@@ -65,13 +65,13 @@ const Application = () => {
     }
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate form
-    if (
+    /*if (
       !formState.firstName || 
-      !formState.surname || 
+      !formState.surName || 
       !formState.email || 
       !formState.phone ||
       !formState.country ||
@@ -85,17 +85,67 @@ const Application = () => {
         variant: "destructive"
       });
       return;
-    }
+  }*/
     
     // Here you would typically send the form data to your backend
-    console.log(formState);
     
-    // Show success message
-    toast({
-      title: "Application submitted",
-      description: "Your application has been successfully submitted",
-      variant: "default"
-    });
+    try {
+      // First API Request to /api/details
+      const response1 = await axios.post('http://localhost:8081/api/details', {
+        firstName: formState.firstName,
+        surName: formState.surName,
+        otherName: formState.otherName,
+        email: formState.email,
+        phone: formState.phone,
+        degree: formState.degree,
+        country: formState.country,
+        region: formState.region,
+        city: formState.city,
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    
+      console.log("First API Response:", response1.data);
+    
+      // Second API Request to /api/extraDetails
+      const response2 = await axios.post('http://localhost:8081/api/registerMail', {
+        firstName: formState.firstName,
+        surName: formState.surName,
+        otherName: formState.otherName,
+        Email: formState.email,
+        phone: formState.phone,
+        degree: formState.degree,
+        country: formState.country,
+        region: formState.region,
+        city: formState.city,
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    
+      console.log("Second API Response:", response2.data);
+    
+      // Success message
+      toast({
+        title: "Application submitted",
+        description: "Your application and extra details have been successfully submitted",
+        variant: "default"
+      });
+    
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      toast({
+        title: "Submission failed",
+        description: "There was an error submitting your application",
+        variant: "destructive"
+      });
+    }
+    
+    
+  
   };
   
   return (
@@ -144,15 +194,15 @@ const Application = () => {
               </div>
               
               <div>
-                <label htmlFor="surname" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="surName" className="block text-sm font-medium text-gray-700 mb-1">
                   Surname *
                 </label>
                 <Input
                   type="text"
-                  id="surname"
-                  name="surname"
+                  id="surName"
+                  name="surName"
                   placeholder="Surname"
-                  value={formState.surname}
+                  value={formState.surName}
                   onChange={handleChange}
                   required
                 />
@@ -206,7 +256,7 @@ const Application = () => {
                   Phone Number *
                 </label>
                 <Input
-                  type="tel"
+                  type="text"
                   id="phone"
                   name="phone"
                   placeholder="Phone Number"
