@@ -46,7 +46,7 @@ export const registerMail = async (req, res) => {
     var email = {
         body : {
             name: firstName ,
-            intro :  degree ,
+            intro :  'WorkHive' ,
             outro: 'Welcome to WORK HIVE!🎉Your account has been successfully created. You can now log in and start exploring our platform.If you have any questions, feel free to reach out to our support team at [support@workHive.com].Happy exploring!Best regards,The WORK HIVE Team',
             signature: false  // Disables default Mailgen signature/footer
         }
