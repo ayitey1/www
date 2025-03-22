@@ -53,9 +53,7 @@ export const registerMail = async (req, res) => {
                     {key:"Email",value:`${Email}`},
                     {key:"Phone",value:`${phone}`},
                     {key:"Degree",value:`${degree}`},
-                    {key:"Country",value:`${country}`},
-                    {key:"Region",value:`${region}`},
-                    {key:"City",value:`${city}`},
+                   
                 
                 ],
                     
