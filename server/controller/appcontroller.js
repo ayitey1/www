@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import Company from "../model/company.model.js";
 import det from '../model/details.model.js';
 import UserModel from '../model/user.model.js';
 import ENV from '../router/config.js';
@@ -120,5 +121,14 @@ export async function Infodetails(req, res) {
         }
     }
 
-
+    export async function CompanyDetails(req, res)  {
+        try {
+          const newCompany = new Company(req.body);
+          await newCompany.save();
+          res.status(201).json(newCompany);
+        } catch (error) {
+          res.status(500).json({ error: error.message });
+        }
+    }
+      ;
 

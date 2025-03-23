@@ -1,7 +1,7 @@
-import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -9,10 +9,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import axios from 'axios';
 import { motion } from "framer-motion";
+import React, { useState } from "react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import useCompanyStore from '../store/store';
 
 interface InternshipData {
   companyName: string;
@@ -37,6 +39,8 @@ interface InternshipData {
 }
 
 const PostInternship = () => {
+  const {company,setCompany}= useCompanyStore()
+
   const [formData, setFormData] = useState<InternshipData>({
     companyName: "",
     companyWebsite: "",
@@ -58,7 +62,7 @@ const PostInternship = () => {
     benefits: "",
     numberOfPositions: "",
   });
-
+  
   const [showPreview, setShowPreview] = useState(false);
 
   const handleInputChange = (
@@ -87,12 +91,47 @@ const PostInternship = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // In a real application, you would send this to your backend
-      console.log("Submitting internship:", formData);
-      toast.success("Internship posted successfully!");
-      // Reset form or redirect
+      const response = await axios.post("http://localhost:8081/api/company", formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      console.log(response)
+      console.log(response.data)
+      setCompany(response.data);
+       // Delay the log to check if Zustand state has updated
+     console.log(company)
+      if (response.status === 201 || response.status === 200) {
+        toast.success("Internship posted successfully!");
+        
+        setFormData({
+          companyName: "",
+          companyWebsite: "",
+          companyLocation: "",
+          companyLogo: "",
+          companyDescription: "",
+          position: "",
+          type: "",
+          duration: "",
+          description: "",
+          stipend: "",
+          applicationDeadline: "",
+          skills: "",
+          qualifications: "",
+          applicationUrl: "",
+          applicationInstructions: "",
+          workMode: "",
+          department: "",
+          benefits: "",
+          numberOfPositions: "",
+        });
+      } else {
+        toast.error("Failed to post internship. Please try again.");
+      }
     } catch (error) {
-      toast.error("Failed to post internship. Please try again.");
+      console.error("Error posting internship:", error);
+      toast.error("Something went wrong! Please try again.");
     }
   };
 
@@ -376,38 +415,38 @@ const PostInternship = () => {
                         )}
                         <div>
                           <h2 className="text-2xl font-bold">{formData.position}</h2>
-                          <p className="text-gray-600">{formData.companyName}</p>
+                          <p className="text-gray-600">{company.companyName}</p>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <h3 className="font-semibold">Location</h3>
-                          <p>{formData.companyLocation}</p>
+                          <p>{company.companyLocation}</p>
                         </div>
                         <div>
                           <h3 className="font-semibold">Type</h3>
-                          <p>{formData.type}</p>
+                          <p>{company.type}</p>
                         </div>
                         <div>
                           <h3 className="font-semibold">Duration</h3>
-                          <p>{formData.duration}</p>
+                          <p>{company.duration}</p>
                         </div>
                         <div>
                           <h3 className="font-semibold">Work Mode</h3>
-                          <p>{formData.workMode}</p>
+                          <p>{company.workMode}</p>
                         </div>
                       </div>
                       <div>
                         <h3 className="font-semibold">Description</h3>
-                        <p className="whitespace-pre-wrap">{formData.description}</p>
+                        <p className="whitespace-pre-wrap">{company.description}</p>
                       </div>
                       <div>
                         <h3 className="font-semibold">Required Skills</h3>
-                        <p className="whitespace-pre-wrap">{formData.skills}</p>
+                        <p className="whitespace-pre-wrap">{company.skills}</p>
                       </div>
                       <div>
                         <h3 className="font-semibold">Benefits</h3>
-                        <p className="whitespace-pre-wrap">{formData.benefits}</p>
+                        <p className="whitespace-pre-wrap">{company.benefits}</p>
                       </div>
                     </div>
                   </DialogContent>
